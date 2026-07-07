@@ -49,10 +49,10 @@
 
     /* ─── RESET & BASE ────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; font-size: 16px; background: var(--bg); }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
+      background: transparent;
       color: var(--text);
       line-height: 1.6;
       overflow-x: hidden;
@@ -745,6 +745,71 @@
     /* ─── 21ST.DEV: MAGNETIC BUTTON ─────────────── */
     .btn-primary { transition: transform 0.15s var(--ease), opacity 0.2s, box-shadow 0.2s; }
 
+    /* ─── 3D TECH GLOBE ──────────────────────────── */
+    .globe-section {
+      padding: 64px 0 80px;
+      overflow: hidden;
+      position: relative;
+    }
+    .globe-hint {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted2);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+    }
+    .globe-wrap {
+      width: 100%;
+      height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 900px;
+      cursor: grab;
+    }
+    .globe-wrap:active { cursor: grabbing; }
+    .globe {
+      position: relative;
+      width: 440px;
+      height: 440px;
+      transform-style: preserve-3d;
+    }
+    .globe-tag {
+      position: absolute;
+      top: 50%; left: 50%;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.71rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: default;
+      transition: background 0.22s, color 0.22s, box-shadow 0.22s, border-color 0.22s;
+      user-select: none;
+      will-change: transform;
+    }
+    .globe-tag:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 22px rgba(139,92,246,0.5), 0 4px 14px rgba(0,0,0,0.25);
+      z-index: 10;
+    }
+
+    /* ─── 3D CARD TILT ────────────────────────────── */
+    .tilt-glare {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 1;
+      mix-blend-mode: overlay;
+    }
+
     /* ─── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 820px) {
       .hero-grid { grid-template-columns: 1fr; }
@@ -772,10 +837,52 @@
       .skills-grid { grid-template-columns: 1fr; }
       .proj-grid { grid-template-columns: 1fr; }
       #scroll-top { bottom: 16px; right: 16px; }
+      .globe-wrap { height: 380px; }
+      .globe { width: 300px; height: 300px; }
     }
+
+    /* ─── GLOBAL 3D PARTICLE CLOUD ──────────────────── */
+    #global-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: -1;
+    }
+
+    /* Glass sections — particle cloud bleeds through */
+    #about     { background: rgba(15, 15, 18, 0.80) !important; }
+    #skills    { background: rgba(9,  9,  11, 0.80) !important; }
+    #projects  { background: rgba(15, 15, 18, 0.80) !important; }
+    #experience{ background: rgba(9,  9,  11, 0.80) !important; }
+    #github    { background: rgba(15, 15, 18, 0.80) !important; }
+    #contact   { background: rgba(9,  9,  11, 0.80) !important; }
+    #faq       { background: rgba(15, 15, 18, 0.80) !important; }
+    footer     { background: rgba(9,  9,  11, 0.88); }
+    .tech-marquee-wrap { background: rgba(15, 15, 18, 0.88) !important; }
+
+    html.light #about     { background: rgba(240, 240, 248, 0.86) !important; }
+    html.light #skills    { background: rgba(248, 248, 252, 0.86) !important; }
+    html.light #projects  { background: rgba(240, 240, 248, 0.86) !important; }
+    html.light #experience{ background: rgba(248, 248, 252, 0.86) !important; }
+    html.light #github    { background: rgba(240, 240, 248, 0.86) !important; }
+    html.light #contact   { background: rgba(248, 248, 252, 0.86) !important; }
+    html.light #faq       { background: rgba(240, 240, 248, 0.86) !important; }
+    html.light footer     { background: rgba(240, 240, 248, 0.90); }
+    html.light .tech-marquee-wrap { background: rgba(240, 240, 248, 0.88) !important; }
+
+    /* 3D card tilt — JS drives transform */
+    .proj-card, .card, .gh-card {
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    /* Disable CSS-only hover lift so JS tilt takes over */
+    .proj-card:hover, .card:hover, .gh-card:hover { transform: none; }
+
+    /* Section-header parallax layer */
+    .section-header { will-change: transform; }
+
   </style>
 </head>
 <body>
+<canvas id="global-canvas" aria-hidden="true"></canvas>
 <a href="#main" class="skip-link">Skip to main content</a>
 
 <!-- ─── NAV ──────────────────────────────────────── -->
@@ -791,7 +898,7 @@
   </ul>
   <div class="nav-right">
     <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle theme">🌙</button>
-    <a href="mailto:aroroted@gmail.com" class="nav-hire">Let's Talk</a>
+    <a href="#" class="nav-hire eml" data-u="aroroted" data-d="gmail.com">Let's Talk</a>
     <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -816,7 +923,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             View My Work
           </a>
-          <a href="mailto:aroroted@gmail.com" class="btn-ghost">
+          <a href="#" class="btn-ghost eml" data-u="aroroted" data-d="gmail.com">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             Get In Touch
           </a>
@@ -855,16 +962,28 @@
     <span>React</span><span>FastAPI</span><span>MongoDB</span><span>Bash</span>
     <span>GitHub Actions</span><span>Helm</span><span>NumPy</span><span>Pandas</span>
     <span>Scikit-Learn</span><span>Apache Spark</span><span>Node.js</span>
-    <span>Linux</span><span>CI/CD</span><span>ETL</span><span>Azure</span>
+    <span>Linux</span><span>CI/CD</span><span>ETL</span><span>Azure</span><span>GCP</span>
     <!-- duplicate for seamless loop -->
     <span>AWS</span><span>Terraform</span><span>Python</span><span>Docker</span>
     <span>Kubernetes</span><span>PostgreSQL</span><span>TensorFlow</span>
     <span>React</span><span>FastAPI</span><span>MongoDB</span><span>Bash</span>
     <span>GitHub Actions</span><span>Helm</span><span>NumPy</span><span>Pandas</span>
     <span>Scikit-Learn</span><span>Apache Spark</span><span>Node.js</span>
-    <span>Linux</span><span>CI/CD</span><span>ETL</span><span>Azure</span>
+    <span>Linux</span><span>CI/CD</span><span>ETL</span><span>Azure</span><span>GCP</span>
   </div>
 </div>
+
+<!-- ─── 3D TECH GLOBE ────────────────────────────── -->
+<section class="globe-section reveal" aria-label="Interactive technology universe">
+  <div class="container" style="text-align:center">
+    <div class="section-label">Technology Universe</div>
+    <h2 style="margin-bottom:0">Every tool in my orbit</h2>
+    <p class="globe-hint">Drag to spin &middot; Hover a tag to highlight</p>
+  </div>
+  <div class="globe-wrap">
+    <div class="globe" id="techGlobe" aria-hidden="true"></div>
+  </div>
+</section>
 
 <!-- ─── ABOUT ─────────────────────────────────────── -->
 <section id="about">
@@ -902,7 +1021,7 @@
           <div class="fact-icon">✉️</div>
           <div>
             <div class="fact-label">Primary Email</div>
-            <div class="fact-val">aroroted@gmail.com</div>
+            <div class="fact-val"><span class="eml-txt" data-u="aroroted" data-d="gmail.com"></span></div>
           </div>
         </div>
         <div class="fact-row">
@@ -935,13 +1054,12 @@
       <div class="card skill-card">
         <h3><span>☁️</span> Cloud &amp; DevOps</h3>
         <div class="skill-list">
-          
-          <div class="skill-row"><span class="skill-name">GCP</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:85%;width:85%"></div></div><span class="skill-pct">85%</span></div>
           <div class="skill-row"><span class="skill-name">AWS</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:85%;width:85%"></div></div><span class="skill-pct">85%</span></div>
           <div class="skill-row"><span class="skill-name">Azure</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:74%;width:74%"></div></div><span class="skill-pct">74%</span></div>
           <div class="skill-row"><span class="skill-name">Docker</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:82%;width:82%"></div></div><span class="skill-pct">82%</span></div>
           <div class="skill-row"><span class="skill-name">Kubernetes</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:66%;width:66%"></div></div><span class="skill-pct">66%</span></div>
           <div class="skill-row"><span class="skill-name">Terraform</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:71%;width:71%"></div></div><span class="skill-pct">71%</span></div>
+          <div class="skill-row"><span class="skill-name">GCP</span><div class="skill-bar"><div class="skill-bar-fill" style="--bar-w:70%;width:70%"></div></div><span class="skill-pct">70%</span></div>
         </div>
       </div>
       <div class="card skill-card">
@@ -1123,7 +1241,6 @@
         <div class="tl-company">Independent / Freelance · Remote</div>
         <div class="tl-desc">Architecting and deploying cloud infrastructure solutions for clients. Building ML-powered data pipelines, automating DevOps workflows, and delivering end-to-end data engineering projects. Specialising in AWS-based solutions with Terraform-managed infrastructure and Python-driven analytics.</div>
         <div class="tl-badges">
-          <span class="tl-badge">GCP</span>
           <span class="tl-badge">AWS</span>
           <span class="tl-badge">Terraform</span>
           <span class="tl-badge">Python</span>
@@ -1219,13 +1336,13 @@
       <div class="contact-text">
         <p>I'm always open to interesting conversations, collaboration opportunities, and new projects especially where cloud, data, and ML intersect. Drop me a message and I'll get back to you within 24 hours.</p>
         <div class="contact-channels">
-          <a href="mailto:aroroted@gmail.com" class="contact-ch">
+          <a href="#" class="contact-ch eml" data-u="aroroted" data-d="gmail.com">
             <div class="ch-icon" style="background:rgba(139,92,246,0.12)">📧</div>
-            <div><div class="ch-type">Primary Email</div><div class="ch-val">aroroted@gmail.com</div></div>
+            <div><div class="ch-type">Primary Email</div><div class="ch-val eml-txt" data-u="aroroted" data-d="gmail.com"></div></div>
           </a>
-          <a href="mailto:darorote@gmail.com" class="contact-ch">
+          <a href="#" class="contact-ch eml" data-u="darorote" data-d="gmail.com">
             <div class="ch-icon" style="background:rgba(6,182,212,0.10)">📨</div>
-            <div><div class="ch-type">Secondary Email</div><div class="ch-val">darorote@gmail.com</div></div>
+            <div><div class="ch-type">Secondary Email</div><div class="ch-val eml-txt" data-u="darorote" data-d="gmail.com"></div></div>
           </a>
           <a href="https://www.linkedin.com/in/david-arorote" target="_blank" class="contact-ch">
             <div class="ch-icon" style="background:rgba(10,102,194,0.10)">💼</div>
@@ -1297,7 +1414,7 @@
           How do I best reach you?
           <span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
         </button>
-        <div class="faq-body"><div class="faq-body-inner"><p>Email is best — aroroted@gmail.com for professional enquiries, or darorote@gmail.com for development-related outreach. LinkedIn also works well for a more professional introduction. I typically respond within 24 hours on business days.</p></div></div>
+        <div class="faq-body"><div class="faq-body-inner"><p>Email is best — <span class="eml-txt" data-u="aroroted" data-d="gmail.com"></span> for professional enquiries, or <span class="eml-txt" data-u="darorote" data-d="gmail.com"></span> for development-related outreach. LinkedIn also works well for a more professional introduction. I typically respond within 24 hours on business days.</p></div></div>
       </div>
 
       <div class="faq-item">
@@ -1332,7 +1449,7 @@
     <a href="https://www.linkedin.com/in/david-arorote" target="_blank" class="soc-btn" title="LinkedIn">
       <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
     </a>
-    <a href="mailto:aroroted@gmail.com" class="soc-btn" title="Email">
+    <a href="#" class="soc-btn eml" data-u="aroroted" data-d="gmail.com" title="Email">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
     </a>
   </div>
@@ -1732,6 +1849,300 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     btn.addEventListener('mouseleave', () => {
       btn.style.transform = '';
     });
+  });
+})();
+
+// ─── 3D Tech Globe ────────────────────────────────
+(function initGlobe() {
+  const globe = document.getElementById('techGlobe');
+  if (!globe) return;
+
+  const tags = [
+    'Python','JavaScript','TypeScript','Go','SQL','Bash','HTML/CSS',
+    'React','Node.js','FastAPI','Django','REST APIs','GraphQL',
+    'PostgreSQL','MongoDB','Redis','BigQuery','Kafka',
+    'AWS','GCP','Azure','Terraform','Docker','Kubernetes',
+    'Helm','CI/CD','Linux','Git','Airflow','dbt',
+    'Pandas','NumPy','TensorFlow','Scikit-Learn',
+    'Apache Spark','Tableau','Power BI','ETL'
+  ];
+
+  const R = 190;
+  const n = tags.length;
+
+  tags.forEach(function(tag, i) {
+    // Fibonacci sphere for even surface distribution
+    const phi   = Math.acos(1 - 2 * (i + 0.5) / n);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    const x = R * Math.sin(phi) * Math.cos(theta);
+    const y = R * Math.sin(phi) * Math.sin(theta);
+    const z = R * Math.cos(phi);
+
+    const el = document.createElement('span');
+    el.className = 'globe-tag';
+    el.textContent = tag;
+    el.style.transform = 'translate(-50%,-50%) translate3d(' + x + 'px,' + y + 'px,' + z + 'px)';
+    globe.appendChild(el);
+  });
+
+  // Animation state
+  let rotX = 15, rotY = 0;
+  let velX = 0, velY = 0.28;
+  let dragging = false;
+  let lastMX = 0, lastMY = 0;
+  let paused = false;
+
+  function tick() {
+    if (!dragging && !paused) {
+      rotX += velX;
+      rotY += velY;
+      velX *= 0.95;
+      velY = velY * 0.995 + 0.28 * 0.005; // gently restore auto-spin
+    }
+    globe.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Mouse drag
+  const wrap = globe.parentElement;
+  wrap.addEventListener('mousedown', function(e) {
+    dragging = true; lastMX = e.clientX; lastMY = e.clientY;
+    velX = 0; velY = 0;
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    const dx = e.clientX - lastMX, dy = e.clientY - lastMY;
+    rotY += dx * 0.45; rotX -= dy * 0.45;
+    velY = dx * 0.45; velX = -dy * 0.45;
+    lastMX = e.clientX; lastMY = e.clientY;
+  });
+  window.addEventListener('mouseup', function() { dragging = false; });
+
+  // Touch drag
+  wrap.addEventListener('touchstart', function(e) {
+    const t = e.touches[0];
+    dragging = true; lastMX = t.clientX; lastMY = t.clientY;
+    velX = 0; velY = 0;
+  }, { passive: true });
+  window.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    const t = e.touches[0];
+    const dx = t.clientX - lastMX, dy = t.clientY - lastMY;
+    rotY += dx * 0.45; rotX -= dy * 0.45;
+    velY = dx * 0.45; velX = -dy * 0.45;
+    lastMX = t.clientX; lastMY = t.clientY;
+  }, { passive: true });
+  window.addEventListener('touchend', function() { dragging = false; });
+
+  // Pause when tab hidden
+  document.addEventListener('visibilitychange', function() { paused = document.hidden; });
+})();
+
+// ─── 3D Card Tilt ─────────────────────────────────
+(function initTilt() {
+  const MAX_TILT = 13;
+  const PERSP    = 900;
+
+  document.querySelectorAll('.proj-card, .card, .gh-card').forEach(function(card) {
+    // Inject glare overlay
+    const glare = document.createElement('div');
+    glare.className = 'tilt-glare';
+    card.appendChild(glare);
+
+    card.addEventListener('mouseenter', function() {
+      card.style.transition = 'transform 0.12s ease, box-shadow 0.3s ease';
+    });
+
+    card.addEventListener('mousemove', function(e) {
+      const r  = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top)  / r.height;
+      const rx = (py - 0.5) * -MAX_TILT * 2;
+      const ry = (px - 0.5) *  MAX_TILT * 2;
+
+      card.style.transform = 'perspective(' + PERSP + 'px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) scale(1.028)';
+      glare.style.opacity    = '1';
+      glare.style.background = 'radial-gradient(circle at ' + (px*100) + '% ' + (py*100) + '%, rgba(255,255,255,0.16) 0%, transparent 65%)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      card.style.transition = 'transform 0.55s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s ease';
+      card.style.transform  = '';
+      glare.style.opacity   = '0';
+    });
+  });
+})();
+
+// ─── GLOBAL 3D PARTICLE CLOUD ───────────────────────────
+// Fixed full-page Three.js particle cloud — purple/cyan cloud clusters
+// that react to mouse tilt, auto-rotate, and shift on scroll.
+(function initGlobalCloud() {
+  const canvas = document.getElementById('global-canvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  const mobile = window.innerWidth < 768;
+  const N      = mobile ? 160 : 380;
+
+  /* ── Renderer ── */
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1 : 2));
+
+  /* ── Scene & Camera ── */
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 3000);
+  camera.position.z = 700;
+
+  /* ── Theme-aware background ── */
+  const DARK_BG  = new THREE.Color(0x080810);
+  const LIGHT_BG = new THREE.Color(0xf0f0f8);
+  function applyBg() {
+    renderer.setClearColor(
+      document.documentElement.classList.contains('light') ? LIGHT_BG : DARK_BG, 1
+    );
+  }
+  applyBg();
+  new MutationObserver(applyBg).observe(document.documentElement,
+    { attributes: true, attributeFilter: ['class'] });
+
+  /* ── Cloud clusters ── */
+  const clusters = [
+    { cx:  240, cy:  190, cz: -180, r: 290 },
+    { cx: -310, cy: -130, cz:  90,  r: 250 },
+    { cx:  90,  cy: -260, cz: -220, r: 210 },
+    { cx: -160, cy:  270, cz:  110, r: 270 },
+    { cx:  360, cy:  -90, cz: -330, r: 190 },
+    { cx: -60,  cy:  -30, cz:  220, r: 160 },
+  ];
+
+  const positions = new Float32Array(N * 3);
+  const colors    = new Float32Array(N * 3);
+
+  /* Palette: purple-heavy with cyan accents and white sparkles */
+  const palette = [
+    [0.545, 0.361, 0.965],  // #8b5cf6 purple
+    [0.545, 0.361, 0.965],  // purple  (2× weight)
+    [0.024, 0.714, 0.831],  // #06b6d4 cyan
+    [0.72,  0.55,  1.00],   // lavender
+    [0.024, 0.714, 0.831],  // cyan    (2× weight)
+    [1.00,  1.00,  1.00],   // white sparkle
+  ];
+
+  for (let i = 0; i < N; i++) {
+    const cl  = clusters[i % clusters.length];
+    const r   = cl.r * Math.cbrt(Math.random());
+    const th  = Math.random() * Math.PI * 2;
+    const ph  = Math.acos(2 * Math.random() - 1);
+    positions[i*3]   = cl.cx + r * Math.sin(ph) * Math.cos(th);
+    positions[i*3+1] = cl.cy + r * Math.sin(ph) * Math.sin(th);
+    positions[i*3+2] = cl.cz + r * Math.cos(ph);
+    const col = palette[Math.floor(Math.random() * palette.length)];
+    colors[i*3] = col[0]; colors[i*3+1] = col[1]; colors[i*3+2] = col[2];
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: mobile ? 2.0 : 2.8,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.80,
+    sizeAttenuation: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+
+  const group = new THREE.Group();
+  group.add(new THREE.Points(geo, mat));
+  scene.add(group);
+
+  /* ── Resize ── */
+  function resize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  /* ── Mouse tilt ── */
+  let tmx = 0, tmy = 0, smx = 0, smy = 0;
+  document.addEventListener('mousemove', e => {
+    tmx = e.clientX / window.innerWidth  - 0.5;
+    tmy = e.clientY / window.innerHeight - 0.5;
+  }, { passive: true });
+
+  /* ── Scroll parallax ── */
+  let scrollY = 0;
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+
+  /* ── Loop ── */
+  let autoRot = 0, hidden = false;
+  document.addEventListener('visibilitychange', () => { hidden = document.hidden; });
+
+  (function loop() {
+    requestAnimationFrame(loop);
+    if (hidden) return;
+    smx += (tmx - smx) * 0.025;
+    smy += (tmy - smy) * 0.025;
+    autoRot += 0.00028;
+    group.rotation.y = autoRot + smx * 0.38;
+    group.rotation.x = smy * 0.16;
+    camera.position.y = scrollY * -0.055;
+    renderer.render(scene, camera);
+  })();
+})();
+
+// ─── 3D CARD TILT ────────────────────────────────────────
+// Perspective rotateX/rotateY tilt on all cards as the mouse moves.
+(function initCardTilt3D() {
+  if ('ontouchstart' in window) return; // skip on touch devices
+  document.querySelectorAll('.proj-card, .card, .gh-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r  = card.getBoundingClientRect();
+      const dx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+      const dy = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+      card.style.transition = 'transform 0.08s ease, box-shadow 0.2s ease';
+      card.style.transform  =
+        `perspective(800px) rotateY(${dx * 9}deg) rotateX(${-dy * 6}deg) translateZ(8px) scale(1.01)`;
+      card.style.boxShadow  =
+        `0 24px 60px rgba(139,92,246,0.18), 0 0 0 1px var(--border2)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform 0.35s ease, box-shadow 0.35s ease';
+      card.style.transform  = '';
+      card.style.boxShadow  = '';
+    });
+  });
+})();
+
+// ─── SECTION HEADING PARALLAX ────────────────────────────
+// Subtle mouse-reactive depth shift on section headers.
+(function initParallaxLayers() {
+  if ('ontouchstart' in window) return;
+  let lx = 0, ly = 0;
+  document.addEventListener('mousemove', e => {
+    const nx = e.clientX / window.innerWidth  - 0.5;
+    const ny = e.clientY / window.innerHeight - 0.5;
+    lx += (nx - lx) * 0.08;
+    ly += (ny - ly) * 0.08;
+    document.querySelectorAll('.section-header').forEach(el => {
+      el.style.transform = `translate(${lx * 10}px, ${ly * 6}px)`;
+    });
+  }, { passive: true });
+})();
+
+// Email obfuscation — assembles mailto: links and display text at runtime
+// so no plain email address ever appears in the HTML source.
+(function protectEmails() {
+  document.querySelectorAll('a.eml').forEach(function(el) {
+    el.href = 'mailto:' + el.dataset.u + '@' + el.dataset.d;
+  });
+  document.querySelectorAll('.eml-txt').forEach(function(el) {
+    el.textContent = el.dataset.u + '@' + el.dataset.d;
   });
 })();
 </script>
