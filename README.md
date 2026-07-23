@@ -1,19 +1,12 @@
 # David Arorote — Developer Portfolio
 
-A personal portfolio for **David Arorote** — Full-Stack Developer & Data Engineer specializing in cloud infrastructure, machine learning, and statistical data analysis.
-
-This repository contains **two complete, independent portfolio implementations** in the same directory:
-
-| Implementation | File | Tech |
-|---|---|---|
-| **Vanilla (static)** | `index.html` | HTML + CSS + Vanilla JS, zero dependencies |
-| **Next.js app** | `app/`, `components/` | Next.js 14, TypeScript, Tailwind, Framer Motion, R3F |
+A single-file, zero-dependency personal portfolio for **David Arorote** — Full-Stack Developer & Data Engineer specializing in cloud infrastructure, machine learning, and statistical data analysis.
 
 Layout inspired by [devini.io](https://devini.io/).
 
 ---
 
-## ✨ Features (both implementations)
+## ✨ Features
 
 ### Core Sections
 - **Hero** — full-viewport intro with Canvas 2D neural-network animation, animated number counters, profile photo, and dual CTAs
@@ -27,40 +20,40 @@ Layout inspired by [devini.io](https://devini.io/).
 - **FAQ** — smooth accordion with SVG chevrons and `aria-expanded` support
 
 ### 3D Interactive Design
-- **Full-page particle cloud** — a fixed canvas (`#global-canvas`) sits behind every section; 380 glowing particles (160 on mobile) arranged in 6 organic 3D cloud clusters using purple/cyan/lavender/white palette with additive blending. The entire cloud auto-rotates slowly and tilts toward the mouse cursor anywhere on the page
-- **Scroll depth parallax** — the camera Y-axis drifts as you scroll, giving the cloud a sense of flying through a galaxy
-- **3D card tilt** — all project, skill, and GitHub cards tilt in `perspective(800px) rotateX/rotateY` as the mouse tracks across them, with a deepening purple glow shadow on hover; snaps back smoothly on leave
-- **Section heading parallax** — `.section-header` elements shift subtly (±10px / ±6px) with the mouse, reinforcing the layered depth illusion
-- **Glass sections** — every section has a semi-transparent `rgba` background (80–88% opacity) so the global particle cloud bleeds through across the whole page
+- **Full-page particle cloud** — a fixed canvas sits behind every section; 380 glowing particles (160 on mobile) in 6 organic 3D cloud clusters with purple/cyan/lavender/white palette and additive blending. Auto-rotates and tilts toward the cursor anywhere on the page
+- **Scroll depth parallax** — camera Y-axis drifts as you scroll, like flying through a galaxy
+- **3D card tilt** — all project, skill, and GitHub cards tilt in `perspective(800px) rotateX/rotateY` as the mouse tracks, with a deepening purple glow on hover
+- **Section heading parallax** — `.section-header` elements shift subtly (±10px / ±6px) with the mouse for layered depth
+- **Glass sections** — semi-transparent `rgba` backgrounds (80–88% opacity) let the global particle cloud bleed through
 
 ### Interactivity & Animation
 - **Hero Canvas 2D neural-network** — 90 particles connected by proximity lines, mouse parallax, theme-aware colors, pauses when tab is hidden
-- **Animated skill bars** — grow from 0% on scroll reveal with staggered delays per card
+- **Animated skill bars** — grow from 0% on scroll reveal with staggered delays
 - **Number counters** — hero stats count up from zero with quartic ease-out on load
-- **Cursor spotlight** — each card renders a radial glow that follows the mouse pointer (21st.dev pattern)
+- **Cursor spotlight** — radial glow follows the mouse on every card (21st.dev pattern)
 - **Magnetic CTA button** — primary button subtly attracts toward the cursor on hover
 - **Shimmer hero text** — "David" sweeps a purple→cyan→pink gradient animation
 - **Tech marquee** — pauses on hover; fades at edges via CSS mask
 - **Scroll reveal** — sections and cards fade/slide up via `IntersectionObserver`
-- **Scroll-to-top button** — appears after 500px scroll, smooth returns to top
+- **Scroll-to-top button** — appears after 500px scroll, smooth return to top
 
 ### Theme & Responsiveness
-- **System-aware dark/light mode** — follows OS preference live via `matchMedia`; manual toggle overrides and persists in `localStorage`; global particle cloud background color updates instantly
-- **Active nav tracking** — current section highlighted in nav as you scroll
+- **System-aware dark/light mode** — follows OS preference via `matchMedia`; manual toggle persists in `localStorage`; particle cloud updates instantly
+- **Active nav tracking** — current section highlighted as you scroll
 - **Hamburger mobile menu** — animated ×/≡ toggle for screens ≤ 820px
-- **Fully responsive** — CSS Grid + Flexbox with breakpoints at 820px and 500px; particle cloud uses fewer particles (160) on mobile for performance
+- **Fully responsive** — CSS Grid + Flexbox with breakpoints at 820px and 500px; cloud uses 160 particles on mobile
 
 ### Security
-- **Email obfuscation** — no email address appears in the HTML source; all addresses are split into `data-u` / `data-d` attributes and assembled at runtime by `protectEmails()`, preventing scraper harvest
+- **Email obfuscation** — no email address appears in the HTML source; addresses are split across `data-u` / `data-d` attributes and assembled at runtime by `protectEmails()`, preventing bot harvesting
 
 ### Accessibility (WCAG 2.1 AA)
 - Skip-to-content link
 - `focus-visible` keyboard ring on all interactive elements
 - `role="main"` + `id="main"` on content wrapper
-- Form labels linked to inputs via `for`/`id` with `autocomplete` attributes
+- Form labels linked via `for`/`id` with `autocomplete` attributes
 - `aria-expanded` on FAQ buttons
 - `aria-label` on icon-only buttons and nav toggle
-- Touch targets ≥ 40px on all interactive elements
+- Touch targets ≥ 40px
 
 ---
 
@@ -68,93 +61,83 @@ Layout inspired by [devini.io](https://devini.io/).
 
 ```
 Portfolio/
-├── index.html              ← Vanilla portfolio (HTML + CSS + JS, ~2150 lines, zero deps)
-├── profile.jpg             ← Profile photo (used by index.html)
-├── public/
-│   └── profile.jpg         ← Same photo, required by Next.js (served at /profile.jpg)
-├── app/
-│   ├── layout.tsx          ← Root layout, metadata, fonts (Inter + Fira Code)
-│   ├── page.tsx            ← Page assembly — all section components
-│   └── globals.css         ← Tailwind base + custom design-system utilities
-├── components/
-│   ├── main/
-│   │   ├── Hero.tsx        ← Hero section (R3F counter, rotating rings, email obfuscation)
-│   │   ├── About.tsx
-│   │   ├── Skills.tsx      ← Framer Motion animated skill bars
-│   │   ├── Projects.tsx
-│   │   ├── Experience.tsx
-│   │   ├── GitHub.tsx
-│   │   ├── Contact.tsx     ← Contact form + obfuscated email channels
-│   │   ├── FAQ.tsx
-│   │   └── Footer.tsx
-│   └── sub/
-│       └── StarBackground.tsx  ← React Three Fiber star field + wireframe icosahedra
-├── constants/
-│   └── index.ts            ← Central data (skills, projects, experience, repos, FAQ)
-├── lib/
-│   ├── motion.ts           ← Framer Motion variant presets
-│   └── utils.ts            ← cn() helper (clsx + tailwind-merge)
-├── tailwind.config.ts      ← Custom color tokens (deep-space, accent, accent-cyan, …)
-├── next.config.js          ← Transpiles three/@react-three packages; GitHub image domains
-├── package.json
-└── README.md               ← This file
+├── index.html      ← the entire site (HTML + CSS + JS, ~2150 lines, zero dependencies)
+├── profile.jpg     ← profile photo (used in hero and GitHub profile cards)
+├── .github/
+│   └── workflows/
+│       └── deploy.yml   ← GitHub Actions → Vercel deployment
+├── vercel.json     ← static site config for Vercel
+└── README.md
 ```
 
 ---
 
 ## 🚀 Getting Started
 
-### Vanilla version (index.html)
-1. **Add your profile photo.** Save a photo as `profile.jpg` in this folder.
-2. **Open `index.html`** directly in any browser — no server, no build tools, no dependencies.
-3. **Optional: deploy.** Works out-of-the-box on GitHub Pages, Netlify, or any static host.
-
-### Next.js version
-```bash
-npm install          # install dependencies (run once)
-npm run dev          # start dev server at http://localhost:3000
-npm run build        # production build
-npm start            # serve production build
-```
-
-> **Note:** Make sure `profile.jpg` exists in both the root directory (for `index.html`) and the `public/` folder (for the Next.js app).
+1. **Add your profile photo.** Save a photo as `profile.jpg` in this folder. A `👤` placeholder shows automatically if the file is missing.
+2. **Open `index.html`** directly in any browser — no server, no install, no build tools.
+3. **Deploy.** Push to GitHub and the Actions workflow deploys automatically to Vercel.
 
 ---
 
-## 🛠️ Customization Guide (index.html)
+## 🚢 Deployment (GitHub → Vercel)
+
+The workflow in `.github/workflows/deploy.yml` handles everything automatically:
+
+- **Push to `main`** → production deployment goes live
+- **Open a Pull Request** → preview URL is posted as a PR comment
+
+### One-time setup — 3 GitHub secrets
+
+Go to your repo → **Settings → Secrets and variables → Actions**, and add:
+
+| Secret | How to get it |
+|---|---|
+| `VERCEL_TOKEN` | Vercel dashboard → Account Settings → Tokens |
+| `VERCEL_ORG_ID` | Run `vercel link` locally → open `.vercel/project.json` → copy `orgId` |
+| `VERCEL_PROJECT_ID` | Same `.vercel/project.json` → copy `projectId` |
+
+```bash
+# Link this folder to a Vercel project (run once, locally)
+npx vercel login
+npx vercel link
+cat .vercel/project.json   # shows orgId and projectId
+```
+
+---
+
+## 🛠️ Customization Guide
 
 | What to change | Where in `index.html` |
 |---|---|
 | Name, tagline, hero copy | `<section id="hero">` |
-| Hero stats (years, projects, domains) | `.hero-stat` elements in `#hero` |
-| About Me text & quick facts | `<section id="about">` → `.about-text` and `.fact-row` |
-| Skill bars & percentages | `<section id="skills">` → `.skill-row` (update `--bar-w` and `width` on `.skill-bar-fill`) |
-| Project cards & filter categories | `<section id="projects">` → `.proj-card` (`data-cat` = `mine`, `explored`, or `contributed`) |
-| Experience timeline | `<section id="experience">` → `.tl-item` elements |
+| Hero stats (years, projects, domains) | `.hero-stat` elements |
+| About Me text & quick facts | `<section id="about">` → `.about-text` / `.fact-row` |
+| Skill bars & percentages | `<section id="skills">` → `.skill-row` (`--bar-w` CSS var + `.skill-bar-fill` width) |
+| LinkedIn endorsed pills | `.li-pills` |
+| Project cards & filter categories | `.proj-card` (`data-cat` = `mine`, `explored`, or `contributed`) |
+| Experience timeline | `.tl-item` elements |
 | GitHub profile cards | `<section id="github">` |
-| Contact details | `<section id="contact">` and `<footer>` → update `data-u` / `data-d` attributes on `.eml` / `.eml-txt` |
-| FAQ entries | `<section id="faq">` → `.faq-item` elements |
-| Color theme tokens | `:root` (dark) and `html.light` CSS blocks at top of `<style>` |
-| Hero neural-network | `initThreeJS()` — tweak `N`, `LINK_DIST`, speeds, or `applyThemeColors()` |
-| Global particle cloud | `initGlobalCloud()` — tweak `N` (default 380/160), cluster positions, speeds, mouse tilt factor |
-| Card tilt intensity | `initCardTilt3D()` — change the `dx * 9` / `dy * 6` multipliers |
+| Contact details & email | Update `data-u` / `data-d` attributes on `.eml` / `.eml-txt` elements |
+| FAQ entries | `.faq-item` elements |
+| Color theme tokens | `:root` (dark) and `html.light` CSS blocks |
+| Hero neural-network | `initThreeJS()` — tweak `N`, `LINK_DIST`, speeds |
+| Global particle cloud | `initGlobalCloud()` — tweak `N` (380/160), cluster positions, rotation speed, mouse tilt |
+| Card tilt intensity | `initCardTilt3D()` — change `dx * 9` / `dy * 6` multipliers |
 | Heading parallax depth | `initParallaxLayers()` — change `lx * 10` / `ly * 6` multipliers |
-
-### Customization (Next.js app)
-All portfolio content lives in `constants/index.ts` — edit that single file to update skills, projects, experience, repos, and FAQ items across the entire Next.js app.
 
 ---
 
-## 🧩 JavaScript Modules (index.html)
+## 🧩 JavaScript Modules
 
 All JS is inline in a single `<script>` block at the bottom of `index.html`:
 
 | Function / IIFE | Purpose |
 |---|---|
-| `initThreeJS()` | Canvas 2D neural-network hero animation (90 particles + proximity lines, hero-scoped, theme-aware) |
-| `initGlobalCloud()` | Canvas 2D 3D particle cloud (380 particles, full-page fixed canvas, 3D rotation matrices, perspective projection, mouse tilt, scroll parallax) |
-| `initCardTilt3D()` | 3D perspective rotateX/Y tilt on all cards; skipped on touch devices |
-| `initParallaxLayers()` | Mouse-reactive depth shift on `.section-header` elements; skipped on touch devices |
+| `initThreeJS()` | Canvas 2D neural-network hero animation (90 particles, proximity lines, theme-aware) |
+| `initGlobalCloud()` | Canvas 2D 3D particle cloud (380 particles, rotation matrices, perspective, mouse tilt) |
+| `initCardTilt3D()` | 3D perspective tilt on cards; skipped on touch devices |
+| `initParallaxLayers()` | Mouse-reactive depth shift on `.section-header` elements |
 | `initTheme()` | Dark/light mode with OS preference + manual override |
 | `toggleFaq(btn)` | FAQ accordion with `aria-expanded` |
 | `filterProj(btn, cat)` | Project card category filter |
@@ -163,10 +146,10 @@ All JS is inline in a single `<script>` block at the bottom of `index.html`:
 | `initMobileMenu()` | Hamburger nav toggle |
 | `initActiveNav()` | Active section tracking in nav |
 | `initScrollTop()` | Scroll-to-top button show/hide |
-| `initSpotlight()` | 21st.dev cursor spotlight (radial glow follows mouse on cards) |
+| `initSpotlight()` | Cursor spotlight radial glow on cards |
 | `initCounters()` | Animated number counters for hero stats |
 | `initMagnetic()` | Magnetic hover effect on primary CTA |
-| `protectEmails()` | Assembles obfuscated email addresses from `data-u`/`data-d` attributes at runtime |
+| `protectEmails()` | Assembles obfuscated email addresses from `data-u`/`data-d` at runtime |
 | `yearEl` | Dynamic footer year |
 
 ---
@@ -181,16 +164,7 @@ All JS is inline in a single `<script>` block at the bottom of `index.html`:
 
 ## 🧰 Tech Stack
 
-### Vanilla portfolio (index.html)
-- HTML5 / CSS3 (custom properties, Grid, Flexbox, `backdrop-filter`, CSS masks, `preserve-3d`)
-- Vanilla JavaScript — zero external dependencies, zero build tools
-- Canvas 2D API (native) — hero neural-network + full-page 3D particle cloud with rotation matrices and perspective projection
-- Google Fonts: Inter (weights 300–900) + Fira Code (monospace) via CDN
-
-### Next.js portfolio
-- [Next.js 14](https://nextjs.org/) with App Router, TypeScript
-- [Tailwind CSS](https://tailwindcss.com/) with custom design tokens
-- [Framer Motion](https://www.framer.com/motion/) — scroll-driven and entrance animations
-- [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) + [Three.js](https://threejs.org/) — `StarBackground` 3D star field
-- [react-icons](https://react-icons.github.io/react-icons/) — icon library
-- [clsx](https://github.com/lukeed/clsx) + [tailwind-merge](https://github.com/dcastil/tailwind-merge) — class utilities
+- **HTML5 / CSS3** — custom properties, Grid, Flexbox, `backdrop-filter`, CSS masks, `preserve-3d`
+- **Vanilla JavaScript** — zero frameworks, zero build tools, zero external dependencies
+- **Canvas 2D API** (native) — hero neural-network + full-page 3D particle cloud with rotation matrices and perspective projection
+- **Google Fonts** — Inter (300–900) + Fira Code via CDN
